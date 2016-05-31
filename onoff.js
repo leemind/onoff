@@ -11,6 +11,7 @@ exports.version = '1.1.0';
 
 function pollerEventHandler(err, fd, events) {
   var value = this.readSync(),
+    gpio = this.gpio,
     callbacks = this.listeners.slice(0);
 
   if (this.opts.debounceTimeout > 0) {
@@ -24,7 +25,7 @@ function pollerEventHandler(err, fd, events) {
   }
 
   callbacks.forEach(function (callback) {
-    callback(err, value);
+    callback(err, value, gpio);
   });
 }
 
@@ -164,7 +165,7 @@ Gpio.prototype.read = function (callback) {
         return callback(err);
       }
 
-      callback(null, buf[0] === ONE[0] ? 1 : 0);
+      callback(null, buf[0] === ONE[0] ? 1 : 0,this.gpio);
     }
   });
 };
